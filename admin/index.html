@@ -72,6 +72,14 @@
                     $('.user_info>span').html('欢迎&nbsp;&nbsp;' + res.data.nickname);
                 }
             })
+
+            // 给退出按钮添加点击事件
+            $('.logout').on('click', function (e) {
+                //    删除token令牌
+                window.localStorage.removeItem('token');
+                // 跳转回登录页面
+                window.location.reload('./login.html');
+            })
         })
 
     </script>
