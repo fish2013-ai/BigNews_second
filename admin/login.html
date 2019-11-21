@@ -38,6 +38,69 @@
     </div>
   </div>
 
+  <!-- Modal -->
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">温馨提示</h4>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+          <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="./libs/http.js"></script>
+  <script>
+    $(function () {
+      // 给登录按钮添加点击事件
+      $('.input_sub').on('click', function (e) {
+        // 阻止按钮的默认行为
+        e.preventDefault();
+        // 获取用户名和密码
+        var name = $('.input_txt').val();
+        var password = $('.input_pass').val();
+        if (name == '' || password == '') {
+          $('#myModal').modal();
+          $('.modal-body').text('密码和用户名都不输，想上天');
+          return;
+        }
+        // 发送用户登录请求
+        $.post({
+          url: BigNew.user_login,
+          data: {
+            username: name,
+            password: password
+          },
+          success: function (res) {
+            if (res.code == 200) {
+              // 将令牌存入本地存储
+              window.localStorage.setItem('token', res.token);
+              $('#myModal').modal();
+              $('.modal-body').text(res.msg);
+              $('#myModal').on('hidden.bs.modal', function (e) {
+                window.location.href = './index.html';
+              })
+
+            } else {
+              $('#myModal').modal();
+              $('.modal-body').text('请确认用户名与密码是否正确');
+            }
+          }
+        })
+      })
+    })
+
+  </script>
+
 </body>
 
 </html>
