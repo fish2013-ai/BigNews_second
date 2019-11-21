@@ -44,7 +44,7 @@
                     <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
                     <div class="col-sm-10">
                         <img src="images/2.jpg" alt="" class="user_pic">
-                        <input style="display: block" name="userPic" type="file" id="exampleInputFile">
+                        <input style="display: none" name="userPic" type="file" id="exampleInputFile">
                         <!-- 给label标签的for属性赋值,值是input标签的id,那这样的话点击label就相当于点击了input -->
                         <br>
                         <label for="exampleInputFile">
@@ -68,6 +68,69 @@
             </form>
         </div>
     </div>
+
+    <script src="./libs/http.js"></script>
+    <script>
+
+        $(function () {
+            // 发送用户信息请求
+            $.get({
+                url: BigNew.user_detail,
+                success: function (res) {
+                    $('#inputEmail1').val(res.data.username);
+                    $('#inputEmail2').val(res.data.nickname);
+                    $('#inputEmail3').val(res.data.email);
+                    $('#inputEmail4').val(res.data.password);
+                    $('.user_pic').attr('src', res.data.userPic)
+                }
+            });
+
+            // 给上传图片注册change事件
+            $('#exampleInputFile').on('change', function () {
+                // 使用console.dir()查看方法
+                // 获取图片信息
+                var imgIcon = this.files[0];
+                // 转换为图片地址
+                var imgUrl = URL.createObjectURL(imgIcon);
+                $('.user_pic').attr('src', imgUrl)
+            })
+            // 给修改按钮添加点击事件
+            $('.btn-edit').on('click', function (e) {
+                // 阻止默认行为
+                e.preventDefault();
+                // 获取from表单数据,formData只支持原生对象,会转化为二进制数据
+                var formData = new FormData($('#form')[0]);
+                // 发送用户编辑请求
+                $.post({
+                    url: BigNew.user_edit,
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (res) {
+                        if (res.code == 200) {
+                            //  发送用户信息请求，渲染页面
+                            $.get({
+                                url: BigNew.user_info,
+                                success: function (res) {
+                                    // 渲染页面用户名和头像
+                                    parent.$('.user_center_link>img').attr('src', res.data.userPic);
+                                    parent.$('.user_info>img').attr('src', res.data.userPic);
+                                    parent.$('.user_info>span').html('欢迎&nbsp;&nbsp;' + res.data.nickname);
+                                    // 刷新页面
+                                    window.location.reload();
+                                }
+                            })
+
+                        }
+
+                    }
+
+                })
+            })
+
+        })
+
+    </script>
 </body>
 
 </html>
